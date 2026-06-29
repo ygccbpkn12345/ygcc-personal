@@ -33,6 +33,7 @@ export default function LifeAdmin() {
     try {
       const res = await fetch(`${API_BASE}/admin/life`, {
         headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
       })
       if (res.status === 401) { logout(); return }
       const data = await res.json()

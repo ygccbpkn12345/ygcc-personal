@@ -35,6 +35,7 @@ export default function ProjectAdmin() {
     try {
       const res = await fetch(`${API_BASE}/admin/projects`, {
         headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
       })
       if (res.status === 401) { logout(); return }
       const data = await res.json()
