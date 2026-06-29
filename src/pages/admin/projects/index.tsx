@@ -14,6 +14,7 @@ interface Project {
   githubUrl: string | null
   demoUrl: string | null
   featured: boolean
+  hidden: boolean
   createdAt: string
   updatedAt: string
 }
@@ -84,6 +85,25 @@ export default function ProjectAdmin() {
     }
   }
 
+  const toggleHidden = async (id: number, currentHidden: boolean) => {
+    const token = localStorage.getItem('token')!
+    try {
+      const res = await fetch(`${API_BASE}/admin/projects?id=${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ hidden: !currentHidden }),
+      })
+      if (res.ok) {
+        setProjects(projects.map((p) => (p.id === id ? { ...p, hidden: !currentHidden } : p)))
+      }
+    } catch {
+      alert('操作失败')
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
@@ -142,6 +162,7 @@ export default function ProjectAdmin() {
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">项目名称</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden md:table-cell">技术栈</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden md:table-cell">精选</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden md:table-cell">隐藏</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden lg:table-cell">更新时间</th>
                     <th className="text-right px-6 py-3 text-sm font-medium text-gray-500">操作</th>
                   </tr>
@@ -172,6 +193,18 @@ export default function ProjectAdmin() {
                           }`}
                         >
                           {project.featured ? '精选' : '普通'}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 hidden md:table-cell">
+                        <button
+                          onClick={() => toggleHidden(project.id, project.hidden)}
+                          className={`text-xs px-2 py-1 rounded-full font-medium transition ${
+                            project.hidden
+                              ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                          }`}
+                        >
+                          {project.hidden ? '已隐藏' : '显示'}
                         </button>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-400 hidden lg:table-cell">

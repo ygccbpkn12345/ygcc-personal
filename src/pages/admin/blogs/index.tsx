@@ -12,6 +12,7 @@ interface BlogPost {
   excerpt: string | null
   tags: string | null
   published: boolean
+  hidden: boolean
   createdAt: string
   updatedAt: string
 }
@@ -86,6 +87,29 @@ export default function BlogAdmin() {
     }
   }
 
+  const toggleHidden = async (id: number, currentHidden: boolean) => {
+    const token = localStorage.getItem('token')!
+    try {
+      const res = await fetch(`${API_BASE}/admin/blog?id=${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ hidden: !currentHidden }),
+      })
+      if (res.ok) {
+        setPosts(
+          posts.map((p) =>
+            p.id === id ? { ...p, hidden: !currentHidden } : p
+          )
+        )
+      }
+    } catch {
+      alert('操作失败')
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
@@ -147,6 +171,7 @@ export default function BlogAdmin() {
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">标题</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden md:table-cell">标签</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden md:table-cell">状态</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden md:table-cell">隐藏</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 hidden lg:table-cell">更新时间</th>
                     <th className="text-right px-6 py-3 text-sm font-medium text-gray-500">操作</th>
                   </tr>
@@ -177,6 +202,18 @@ export default function BlogAdmin() {
                           }`}
                         >
                           {post.published ? '已发布' : '草稿'}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 hidden md:table-cell">
+                        <button
+                          onClick={() => toggleHidden(post.id, post.hidden)}
+                          className={`text-xs px-2 py-1 rounded-full font-medium transition ${
+                            post.hidden
+                              ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                          }`}
+                        >
+                          {post.hidden ? '已隐藏' : '显示'}
                         </button>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-400 hidden lg:table-cell">

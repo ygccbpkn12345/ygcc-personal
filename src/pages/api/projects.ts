@@ -11,7 +11,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!project) return res.status(404).json({ error: '项目不存在' })
       return res.status(200).json(project)
     }
-    const projects = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+    const projects = await prisma.project.findMany({
+      where: { hidden: false },
+      orderBy: { createdAt: 'desc' },
+    })
     return res.status(200).json(projects)
   } catch {
     return res.status(500).json({ error: '获取项目失败' })

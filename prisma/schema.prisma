@@ -29,6 +29,7 @@ model BlogPost {
   coverImage String?  // 封面图
   tags      String?  // 标签（逗号分隔）
   published Boolean  @default(false)
+  hidden    Boolean  @default(false) // 是否隐藏
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -46,6 +47,7 @@ model Project {
   githubUrl   String?
   demoUrl     String?
   featured    Boolean  @default(false) // 是否精选
+  hidden      Boolean  @default(false) // 是否隐藏
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -57,6 +59,7 @@ model LifePost {
   id        Int      @id @default(autoincrement())
   content   String   // 文字描述
   images   String?  // 图片路径（逗号分隔）
+  hidden    Boolean  @default(false) // 是否隐藏
   createdAt DateTime @default(now())
 
   @@map("life_posts")

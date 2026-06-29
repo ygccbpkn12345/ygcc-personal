@@ -9,6 +9,7 @@ interface LifePost {
   id: number
   content: string
   images: string | null
+  hidden: boolean
   createdAt: string
 }
 
@@ -103,6 +104,29 @@ export default function LifeAdmin() {
       }
     } catch {
       alert('网络错误')
+    }
+  }
+
+  const toggleHidden = async (id: number, currentHidden: boolean) => {
+    const token = localStorage.getItem('token')!
+    try {
+      const res = await fetch(`${API_BASE}/admin/life?id=${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ hidden: !currentHidden }),
+      })
+      if (res.ok) {
+        setPosts(
+          posts.map((p) =>
+            p.id === id ? { ...p, hidden: !currentHidden } : p
+          )
+        )
+      }
+    } catch {
+      alert('操作失败')
     }
   }
 
@@ -210,6 +234,16 @@ export default function LifeAdmin() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => toggleHidden(post.id, post.hidden)}
+                      className={`text-xs px-2 py-1 rounded transition ${
+                        post.hidden
+                          ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                          : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                      }`}
+                    >
+                      {post.hidden ? '已隐藏' : '隐藏'}
+                    </button>
                     <button
                       onClick={() => startEdit(post)}
                       className="text-xs px-2 py-1 text-gray-500 hover:text-black hover:bg-gray-100 rounded transition"
