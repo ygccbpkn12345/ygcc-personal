@@ -13,6 +13,7 @@ export const blogPostSchema = z.object({
   coverImage: z.string().optional(),
   tags: z.string().optional(),
   published: z.boolean().default(false),
+  hidden: z.boolean().optional(),
 })
 
 export const projectSchema = z.object({
@@ -24,11 +25,13 @@ export const projectSchema = z.object({
   githubUrl: z.string().optional(),
   demoUrl: z.string().optional(),
   featured: z.boolean().default(false),
+  hidden: z.boolean().optional(),
 })
 
 export const lifePostSchema = z.object({
   content: z.string().min(1, '内容不能为空'),
   images: z.string().optional(),
+  hidden: z.boolean().optional(),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>
